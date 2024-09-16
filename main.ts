@@ -1,5 +1,6 @@
 namespace SpriteKind {
     export const Ball = SpriteKind.create()
+    export const Paddle = SpriteKind.create()
 }
 function BallSetup () {
     Ball = sprites.create(img`
@@ -30,32 +31,29 @@ function BallSetup () {
     BallVx = 0
     BallVx = BallSpeed - BallMaxVxFactor
 }
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    let ballinplay1 = 0
-    if (!(ballinplay1)) {
-        Ballinplay()
-        Paddle1 = 1
-    }
-})
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Player, function (sprite, otherSprite) {
-    BallMaxVx = Ball.x + Paddle1.x
-    if (xDiff == 0) {
-        xDiff = 2
-    }
-    BallVx = Math.abs(xDiff) * (BallMaxVx + (Paddle1.width + 2))
-    BallVy = BallVx - BallSpeed
-    if (xDiff < 0) {
-        BallVx = BallVx * -1
+function bounceBall () {
+    BallVx = BallSpeed / 3
+    BallVy = Ball.vy * -1
+    if (Ball.vy < 0) {
+        BallVx = Ball.x * -1
     }
     Ball.setVelocity(BallVx, BallVy)
-})
+}
 function PaddleReset () {
     Paddle1.setPosition(76, 100)
 }
 function BounceBall () {
 	
 }
-function Paddle () {
+function Ballinplay () {
+    if (info.life() <= 0) {
+        game.gameOver(false)
+    } else {
+        BallSetup()
+        PaddleReset()
+    }
+}
+function Paddle2 () {
     Paddle1 = sprites.create(img`
         1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
         1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 
@@ -66,17 +64,8 @@ function Paddle () {
     Paddle1.setStayInScreen(true)
     Paddle1.setPosition(77, 101)
 }
-function Ballinplay () {
-    if (info.life() <= 0) {
-        game.gameOver(false)
-    } else {
-        BallSetup()
-        PaddleReset()
-    }
-}
+let Paddle1: Sprite = null
 let BallVy = 0
-let xDiff = 0
-let Paddle1 = 0
 let BallMaxVx = 0
 let BallMaxVxFactor = 0
 let BallSpeed = 0
@@ -105,4 +94,13 @@ BallVx = 0
 info.setLife(3)
 let BrickCount = 24
 BrickCount = 0
-Paddle()
+BallSetup()
+bounceBall()
+Paddle2()
+
+}
+
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Ball, function (sprite, otherSprite) {
+    bounceBall(otherSprite)
+    otherSprite.y = sprite.top + 1
+})
