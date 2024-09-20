@@ -32,9 +32,17 @@ function BallSetup () {
     BallVx = 0
     BallVx = BallSpeed - BallMaxVxFactor
 }
+function advanceLevel () {
+    tiles.setCurrentTilemap(LevelMaps[level])
+    level += 1
+    game.splash("Level " + level)
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Ball, function (sprite, otherSprite) {
     bounceBall(otherSprite)
     otherSprite.y = sprite.top - 1
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    advanceLevel()
 })
 scene.onOverlapTile(SpriteKind.Ball, assets.tile`myTile2`, function (sprite, location) {
     info.changeScoreBy(1)
@@ -51,6 +59,11 @@ function bounceBall (BallSprite: Sprite) {
 function PaddleReset () {
     Paddle1.setPosition(76, 100)
 }
+scene.onOverlapTile(SpriteKind.Ball, assets.tile`myTile8`, function (sprite, location) {
+    bounceBall(sprite)
+    tiles.setTileAt(location, assets.tile`myTile6`)
+    info.changeScoreBy(1)
+})
 scene.onOverlapTile(SpriteKind.Ball, assets.tile`myTile1`, function (sprite, location) {
     info.changeScoreBy(1)
     tiles.setTileAt(location, assets.tile`transparency16`)
@@ -76,12 +89,14 @@ function Paddle2 () {
 }
 let Paddle1: Sprite = null
 let BallVy = 0
+let level = 0
 let BallMaxVx = 0
 let BallMaxVxFactor = 0
 let BallSpeed = 0
 let BallVx = 0
 let Ball2: Sprite = null
-let LevelMaps = [tilemap`level14`, tilemap`level0`, tilemap`level13`]
+let LevelMaps: tiles.TileMapData[] = []
+LevelMaps = [tilemap`level13`, tilemap`level0`, tilemap`level14`]
 Ball2 = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
@@ -107,3 +122,4 @@ let BrickCount = 24
 BrickCount = 0
 BallSetup()
 Paddle2()
+advanceLevel()
