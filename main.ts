@@ -2,11 +2,6 @@ namespace SpriteKind {
     export const Ball = SpriteKind.create()
     export const Paddle = SpriteKind.create()
 }
-function GameLose () {
-    if (true) {
-    	
-    }
-}
 function BallSetup () {
     Ball2 = sprites.create(img`
         . . . . . 1 1 1 1 1 1 . . . . . 
@@ -64,11 +59,9 @@ function bounceBall (BallSprite: Sprite) {
 function PaddleReset () {
     Paddle1.setPosition(76, 100)
 }
-info.onScore(16, function () {
-    LevelMaps = [tilemap`level0`]
-})
-info.onScore(80, function () {
-    game.gameOver(true)
+sprites.onOverlap(SpriteKind.Food, SpriteKind.Player, function (sprite, otherSprite) {
+    sprites.destroy(PowerUp)
+    controller.moveSprite(Paddle1, 300, 0)
 })
 sprites.onOverlap(SpriteKind.Ball, SpriteKind.Enemy, function (sprite, otherSprite) {
     game.gameOver(false)
@@ -83,9 +76,32 @@ scene.onOverlapTile(SpriteKind.Ball, assets.tile`myTile1`, function (sprite, loc
     tiles.setTileAt(location, assets.tile`myTile2`)
     info.changeScoreBy(1)
 })
-function GameWin () {
-	
+function PowerUp2 () {
+    PowerUp = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . 9 6 . . . . . . . 
+        . . . . . . 6 9 9 9 . . . . . . 
+        . . . . . . 9 9 9 6 . . . . . . 
+        . . . . . . . 6 9 . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Food)
+    PowerUp.setPosition(randint(15, 145), 0)
+    PowerUp.setVelocity(0, 50)
+    PowerUp.setFlag(SpriteFlag.AutoDestroy, true)
 }
+info.onScore(118, function () {
+    game.gameOver(true)
+})
 function Ballinplay () {
     if (info.life() <= 0) {
         game.gameOver(false)
@@ -105,6 +121,7 @@ function Paddle2 () {
     Paddle1.setStayInScreen(true)
     Paddle1.setPosition(77, 101)
 }
+let PowerUp: Sprite = null
 let Paddle1: Sprite = null
 let BallVy = 0
 let level = 0
@@ -160,4 +177,5 @@ info.setLife(3)
 let BrickCount = 24
 Paddle2()
 advanceLevel()
+PowerUp2()
 BallSetup()
