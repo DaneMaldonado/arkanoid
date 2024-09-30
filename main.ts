@@ -32,17 +32,12 @@ function BallSetup () {
     BallVx = 0
     BallVx = BallSpeed - BallMaxVxFactor
 }
-function advanceLevel () {
-    tiles.setCurrentTilemap(LevelMaps[level])
-    level += 1
-    game.splash("Level " + level)
-}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Ball, function (sprite, otherSprite) {
     bounceBall(otherSprite)
     otherSprite.y = sprite.top - 1
 })
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-    advanceLevel()
+	
 })
 scene.onOverlapTile(SpriteKind.Ball, assets.tile`myTile2`, function (sprite, location) {
     info.changeScoreBy(1)
@@ -99,6 +94,16 @@ function PowerUp2 () {
     PowerUp.setVelocity(0, 50)
     PowerUp.setFlag(SpriteFlag.AutoDestroy, true)
 }
+function advancelevel () {
+    TotalScoreNeeded += LevelScoreNeeded[level]
+    tiles.setCurrentTilemap(LevelMaps[LevelScoreNeeded])
+    level += 1
+    game.splash("Level " + level)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Ball)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Player)
+    Paddle2()
+    BallSetup()
+}
 info.onScore(118, function () {
     game.gameOver(true)
 })
@@ -124,11 +129,12 @@ function Paddle2 () {
 let PowerUp: Sprite = null
 let Paddle1: Sprite = null
 let BallVy = 0
-let level = 0
 let BallMaxVx = 0
 let BallMaxVxFactor = 0
 let BallSpeed = 0
+let level = 0
 let BallVx = 0
+let LevelScoreNeeded: number[] = []
 let LevelMaps: tiles.TileMapData[] = []
 let Ball2: Sprite = null
 Ball2 = sprites.create(img`
@@ -150,6 +156,8 @@ Ball2 = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     `, SpriteKind.Ball)
 LevelMaps = [tilemap`level13`, tilemap`level0`, tilemap`level14`]
+LevelScoreNeeded = [16, 57, 118]
+let TotalScoreNeeded = 0
 let Barrier = sprites.create(img`
     ........................................................................................................................................................................................................
     ........................................................................................................................................................................................................
@@ -170,12 +178,16 @@ let Barrier = sprites.create(img`
     `, SpriteKind.Enemy)
 Barrier.setPosition(78, 115)
 Ball2.setPosition(randint(5, 150), randint(0, 50))
-tiles.setCurrentTilemap(tilemap`level14`)
 BallVx = 0
-info.setScore(0)
-info.setLife(3)
 let BrickCount = 24
+level = 0
+info.setScore(0)
 Paddle2()
-advanceLevel()
-PowerUp2()
 BallSetup()
+advancelevel()
+game.onUpdateInterval(5000, function () {
+    controller.moveSprite(Paddle1, 150, 0)
+})
+game.onUpdateInterval(15000, function () {
+    PowerUp2()
+})
