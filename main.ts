@@ -25,7 +25,7 @@ function BallSetup () {
     Ball2.setBounceOnWall(true)
     Ball2.setStayInScreen(true)
     Ball2.setVelocity(-60, 60)
-    BallSpeed = 90
+    BallSpeed = 500
     BallMaxVxFactor = 0.75
     BallMaxVx = BallSpeed * BallMaxVxFactor
     Ball2.setPosition(95, 80)
@@ -96,7 +96,7 @@ function PowerUp2 () {
 }
 function advancelevel () {
     TotalScoreNeeded += LevelScoreNeeded[level]
-    tiles.setCurrentTilemap(LevelMaps[LevelScoreNeeded])
+    tiles.setCurrentTilemap(LevelMaps[level])
     level += 1
     game.splash("Level " + level)
     sprites.destroyAllSpritesOfKind(SpriteKind.Ball)
@@ -117,10 +117,10 @@ function Ballinplay () {
 }
 function Paddle2 () {
     Paddle1 = sprites.create(img`
-        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
-        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
-        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
-        2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 
+        222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+        222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+        222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+        222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
         `, SpriteKind.Player)
     controller.moveSprite(Paddle1, 150, 0)
     Paddle1.setStayInScreen(true)
@@ -132,8 +132,8 @@ let BallVy = 0
 let BallMaxVx = 0
 let BallMaxVxFactor = 0
 let BallSpeed = 0
-let level = 0
 let BallVx = 0
+let level = 0
 let LevelScoreNeeded: number[] = []
 let LevelMaps: tiles.TileMapData[] = []
 let Ball2: Sprite = null
@@ -158,6 +158,7 @@ Ball2 = sprites.create(img`
 LevelMaps = [tilemap`level13`, tilemap`level0`, tilemap`level14`]
 LevelScoreNeeded = [16, 57, 118]
 let TotalScoreNeeded = 0
+level = 0
 let Barrier = sprites.create(img`
     ........................................................................................................................................................................................................
     ........................................................................................................................................................................................................
@@ -179,12 +180,19 @@ let Barrier = sprites.create(img`
 Barrier.setPosition(78, 115)
 Ball2.setPosition(randint(5, 150), randint(0, 50))
 BallVx = 0
-let BrickCount = 24
-level = 0
 info.setScore(0)
 Paddle2()
 BallSetup()
 advancelevel()
+game.onUpdate(function () {
+    if (info.score() >= TotalScoreNeeded) {
+        advancelevel()
+    } else if (info.score() >= 57) {
+        advancelevel()
+    } else {
+    	
+    }
+})
 game.onUpdateInterval(5000, function () {
     controller.moveSprite(Paddle1, 150, 0)
 })
